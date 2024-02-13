@@ -12,7 +12,8 @@
             "app\\": "app"
         },
         "files": [
-            "app/helpers/helpers.php"
+            "app/helpers/helpers.php",
+            "app/routes/routes.php"
         ]
     }
 }

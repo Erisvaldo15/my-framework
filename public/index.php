@@ -1,17 +1,15 @@
 <?php
 
-use app\database\model\{Post, User, Comment};
+use app\core\Route;
+use app\core\Router;
 
 require_once '../vendor/autoload.php';
 
 try {
-
-    $post = new Post;
-
-    dd($post->addRelations(
-        [User::class, 'belongsTo'], [Comment::class, 'hasMany', 'comments']
-    )->find(10)->comments);
-
+    $router = new Router;
+    $route = new Route($router);
+    routes($route);
+    $router->initialize();
 } catch (\Throwable $th) {
     dd("{$th->getMessage()} in line {$th->getLine()} from file {$th->getFile()}");
 }
