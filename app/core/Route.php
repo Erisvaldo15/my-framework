@@ -4,28 +4,41 @@ namespace app\core;
 
 use Closure;
 
-class Route {
+abstract class Route
+{
 
+    protected string $prefix = "";
     public array $routes = [];
-    private string $prefix = "";
 
-    public function __construct(private Router $router) {}
-
-    public function get(string $route, string $controller, string $method) {
-        $this->router->addRoute('get', $route, $controller, $method, $this->prefix);
+    public function __construct(private Router $router)
+    {
+        $this->router->defineRouteInstance($this);
     }
 
-    public function post(string $route, string $controller, string $method) {
-        $this->router->addRoute('post', $route, $controller, $method, $this->prefix);
+    public function get(string $route, string $controller, string $method)
+    {
+        $this->router->addRoute('get', $route, $controller, $method);
     }
 
-    public function prefix(string $prefix): Route {
-        $this->prefix = $prefix;
+    public function post(string $route, string $controller, string $method)
+    {
+        $this->router->addRoute('post', $route, $controller, $method);
+    }
+
+    public function prefix(string $prefix): Route
+    {
+        $this->prefix = "{$this->prefix}/{$prefix}";
         return $this;
     }
 
-    public function group(Closure $function) {
+    public function group(Closure $function)
+    {
         $function($this);
         $this->prefix = "";
+    }
+
+    public function getPrefix(): string
+    {
+        return $this->prefix;
     }
 }

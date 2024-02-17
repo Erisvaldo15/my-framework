@@ -1,13 +1,13 @@
 <?php
 
-use app\core\Route;
+use app\core\WebRoute;
 use app\core\Router;
 
 require_once '../vendor/autoload.php';
 
 try {
     $router = new Router;
-    $route = new Route($router);
+    $route = new WebRoute($router);
     routes($route);
     $router->initialize();
 } catch (\Throwable $th) {
