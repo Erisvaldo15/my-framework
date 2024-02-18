@@ -2,27 +2,27 @@
 
 namespace app\core;
 
+use app\traits\Request;
 use Exception;
 
 class Router
 {
-
-    private Request $request;
     private Controller $controller;
     private Method $method;
     private Route $route;
 
+    use Request;
+
     public function __construct()
     {
-        $this->request = new Request;
-        $this->controller = new Controller($this->request);
+        $this->controller = new Controller();
         $this->method = new Method;
     }
 
     public function initialize()
     {
-        $currentRequestType = $this->request->extractCurrentRequestType();
-        $currentRoute = $this->removeSlashFromEndOfUri($this->request->extractUri());
+        $currentRequestType = $this->extractCurrentRequestType();
+        $currentRoute = $this->removeSlashFromEndOfUri($this->extractUri());
 
         $findRoute = array_filter($this->route->routes[$currentRequestType], fn ($route) => $route["route"] === $currentRoute);
 

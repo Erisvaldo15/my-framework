@@ -7,7 +7,11 @@ class HomeController
 
     public function index()
     {
-        dd("index");
+        http_response_code(404);
+        echo json_encode([
+            "status" => "200",
+            "goll" => "example",
+        ]);
     }
 
     public function show()
