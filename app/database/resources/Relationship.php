@@ -2,10 +2,10 @@
 
 namespace app\database\resources;
 
+use app\classes\Validation;
 use app\database\entity\Entity;
 use app\database\resources\QueryBuilder;
 use app\database\model\Model;
-use Exception;
 
 class Relationship {
 
@@ -32,7 +32,7 @@ class Relationship {
 
     private function relation(string $relationshipClass, string $typeRelationship, array|Entity $data, ?string $property = null): array|Entity
     {
-        if (!in_array($typeRelationship, $this->relationsType)) throw new Exception("Relationship {$typeRelationship} unknown", 1);
+        Validation::thereIsValueInArray($typeRelationship, $this->relationsType, "Relationship {$typeRelationship} unknown");
         return $this->$typeRelationship($relationshipClass, $data, $property);
     }
 
@@ -43,7 +43,7 @@ class Relationship {
         $relationsCreated = [];
 
         foreach ($this->relations as $relation) {
-            if (count($relation) < 2) throw new Exception("Few arguments were passed for parameter, were expected at least 2 arguments.", 1);
+            Validation::length(count($relation), 2, "<", "Few arguments were passed for parameter, were expected at least 2 arguments");
             [$relationshipClass, $typeRelationship, $property] = $relation + [2 => null]; // assign null for property value case be undefined.
             $relationsCreated[] = $this->relation($relationshipClass, $typeRelationship, $data, $property);
         }

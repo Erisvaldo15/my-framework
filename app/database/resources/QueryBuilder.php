@@ -2,6 +2,7 @@
 
 namespace app\database\resources;
 
+use app\classes\Validation;
 use app\database\Connection;
 use app\database\model\Model;
 use app\database\resources\Paginate;
@@ -9,7 +10,6 @@ use app\database\resources\Relationship;
 use app\traits\Formatter;
 
 use PDO;
-use Exception;
 use PDOStatement;
 
 class QueryBuilder {
@@ -25,8 +25,6 @@ class QueryBuilder {
     public ?Relationship $relationship = null;
     public string $table;
 
-    use Formatter;
-
     public function __construct(Model $model)
     {
         $this->model = $this->model ?? $model;
@@ -36,8 +34,8 @@ class QueryBuilder {
     }
 
     public function getEntity(Model|string $table): string {
-        $entity = "{$table}Entity";
-        if(!class_exists($entity = "app\\database\\entity\\$entity")) throw new Exception("{$entity} does not exist", 1);
+        $entity = "app\\database\\entity\\{$table}Entity";
+        Validation::classExists($entity);
         return $entity;
     }
 
@@ -123,9 +121,7 @@ class QueryBuilder {
 
     public function where(string $field, string $value, $logic = "="): QueryBuilder
     {
-        if (!in_array($logic, $this->mapping)) {
-            throw new Exception("Logic Operator invalid", 1);
-        }
+        Validation::thereIsValueInArray($logic, Validation::getOperators(), "Logic Operator invalid");
 
         $formattedField = $this->bind($field, $value);
 
