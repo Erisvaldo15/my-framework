@@ -41,8 +41,8 @@ abstract class Model {
         return $this->queryBuilder->delete();
     }
 
-    public function where(string $field, string $value, $logic = "="): QueryBuilder {
-        return $this->queryBuilder->select()->where($field, $value, $logic);
+    public function where(string $field, string $value, $logic = "="): Array|false {
+        return $this->queryBuilder->select()->where($field, $value, $logic)->get();
     }
 
     public function whereIn(string $field, array|string $values): array|false {   

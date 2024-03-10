@@ -1,6 +1,6 @@
 <?php
 
-use app\core\ApiRoute;
+use app\core\WebRoute;
 use app\core\Router;
 
 require_once '../vendor/autoload.php';
@@ -11,7 +11,7 @@ try {
     $dotenv->load();
 
     $router = new Router;
-    $route = new ApiRoute($router);
+    $route = new WebRoute($router);
     routes($route);
     $router->initialize();
     

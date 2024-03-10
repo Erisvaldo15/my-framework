@@ -8,7 +8,7 @@ abstract class Route
 {
 
     protected string $prefix = "";
-    public array $routes = [];
+    public array $routesWithRequestType = [];
 
     public function __construct(private Router $router)
     {

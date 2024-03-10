@@ -2,21 +2,22 @@
 
 namespace app\controllers\admin;
 
+use app\database\model\User;
+
 class HomeController
 {
 
     public function index()
     {
-        http_response_code(404);
         echo json_encode([
             "status" => "200",
             "goll" => "example",
         ]);
     }
 
-    public function show()
+    public function show($user, int $id)
     {
-        dd("show");
+        dd($user);
     }
 
     public function users()
