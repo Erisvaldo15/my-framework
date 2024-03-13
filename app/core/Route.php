@@ -6,7 +6,7 @@ use Closure;
 
 abstract class Route
 {
-
+    protected string $basePrefix = "";
     protected string $prefix = "";
     public array $routesWithRequestType = [];
 
@@ -27,14 +27,14 @@ abstract class Route
 
     public function prefix(string $prefix): Route
     {
-        $this->prefix = "{$this->prefix}/{$prefix}";
+        $this->prefix .= "/{$prefix}";
         return $this;
     }
 
     public function group(Closure $function)
     {
         $function($this);
-        $this->prefix = "";
+        $this->prefix = $this->basePrefix;
     }
 
     public function getPrefix(): string

@@ -14,7 +14,6 @@ try {
     $route = new WebRoute($router);
     routes($route);
     $router->initialize();
-    
 } catch (\Throwable $th) {
     dd("{$th->getMessage()} in line {$th->getLine()} from file {$th->getFile()}");
 }

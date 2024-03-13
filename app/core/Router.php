@@ -2,7 +2,7 @@
 
 namespace app\core;
 
-use app\classes\Validation;
+use app\traits\CoreValidation;
 use app\traits\Request;
 
 class Router
@@ -11,6 +11,7 @@ class Router
     private Parameter $parameter;
 
     use Request;
+    use CoreValidation;
 
     public function __construct()
     {
@@ -23,10 +24,12 @@ class Router
 
         $foundRoute = $this->searchByRoute($this->route->routesWithRequestType, $currentRoute);
 
-        [,$controller, $method] = array_values($foundRoute["foundRoute"]);
+        if (!$foundRoute) return;
 
-        Validation::classExists($controller);
-        Validation::methodExists($method, $controller);
+        [, $controller, $method] = array_values($foundRoute["foundRoute"]);
+
+        $this->doesTheControllerExist($controller);
+        $this->doesTheMethodExist($controller, $method);
 
         $instanceControllerClass = new $controller;
 
@@ -49,7 +52,7 @@ class Router
             $this->route->routesWithRequestType[$requestType] = [];
         }
 
-        Validation::thereIsValueInArray($routeWithPrefix, $this->route->routesWithRequestType[$requestType]);
+        $this->doesTheRouteAlreadyExist($routeWithPrefix, $this->route->routesWithRequestType);
 
         $this->route->routesWithRequestType[$requestType][] = [
             "route" => $routeWithPrefix,
@@ -71,21 +74,16 @@ class Router
                 $regex = preg_replace("/{([^}]+)}/", "([^/]+)", $route);
                 $regex = "#^{$regex}$#";
 
-                /// status code 422 is the adequal.
-
                 if (preg_match($regex, $currentRoute, $matches)) {
-
-                    if (!$this->isValidRequestType($requestType)) {
-                        http_response_code(405);
-                        die;
-                    }
-
                     array_shift($matches);
                     $foundRoute = $routeData;
                     $parameters = $this->parameter->parameter($routeData['route'], $matches, $this->route);
                 }
             };
         }
+
+        $this->doesTheRouteExist($foundRoute);
+        $this->isValidRequestType($requestType);
 
         return [
             "foundRoute" => $foundRoute,
@@ -96,6 +94,7 @@ class Router
     public function defineRouteInstance(Route $route): void
     {
         $this->route = $route;
+        $this->routeType = $route;
     }
 
     private function removeSlashFromEndOfUri(string $routeWithPrefix): string

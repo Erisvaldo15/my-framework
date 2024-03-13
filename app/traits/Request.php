@@ -19,10 +19,6 @@ trait Request
         return $_SERVER["REQUEST_METHOD"];
     }
 
-    public function isValidRequestType(string $requestType): bool {
-        return $this->extractCurrentRequestType() === strtoupper($requestType);
-    }
-
     public function contentType(string $contentType): void {
         header("Content-type: {$contentType}");
     }

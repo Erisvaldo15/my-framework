@@ -3,6 +3,7 @@
 namespace app\core;
 
 use app\database\model\Model;
+use app\traits\CoreValidation;
 
 class Parameter
 {
@@ -15,19 +16,18 @@ class Parameter
    ];
    private ?Model $model = null;
 
+   use CoreValidation;
+
    public function checkTypeParameter(string $parameter, string $value)
    {
-      if (in_array($parameter, array_keys($this->parametersPattern))) {
-         if (preg_match($this->parametersPattern[$parameter], $value)) {
-            return $value;
-            // se não for o tipo não for válido, retornar um 
-         }
-      }
+      $this->doesTheParameterTypeExist($parameter, $this->parametersPattern);
+      $this->isValidParameterValue($parameter, $value);
+      return $value;
    }
 
    public function parameter(string $route, array $parametersValues, Route $routeType): array|false
    {
-      preg_match_all($this->patternForIdentifyRouteWithParamater, $route, $matches); // get all parameters definied in the route. 
+      preg_match_all($this->patternForIdentifyRouteWithParamater, $route, $matches); 
 
       $parameters = $matches[0];
 
@@ -40,8 +40,10 @@ class Parameter
             $parameter = trim($parameter, "{}");
 
             if (!str_contains($parameter, ":")) {
+               $this->routeType = $routeType;
                $validatedParameters[] = $this->checkTypeParameter($parameter, $parametersValues[$index]);
             } else {
+               $this->routeType = $routeType;
                $validatedParameters[] = $this->bindParam($parameter, $parametersValues[$index]);
             }
          }
@@ -58,8 +60,7 @@ class Parameter
       if (!class_exists($model = "app\\database\\model\\" . ucfirst($splittedParameter[0]))) return;
       $model = new $model;
       $foundData = $model->where($splittedParameter[1], $value);
-      if ($foundData) return $foundData;
-      http_response_code(404);
-      die;
+      $this->doesTheRouteExist($foundData);
+      return $foundData;
    }
 }

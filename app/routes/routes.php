@@ -7,8 +7,7 @@ function routes(Route $route)
 {
     $route->prefix("admin")->group(function ($route) {
         $route->get("/users", HomeController::class, "users");
-        $route->get("/user/{user:firstName}/{id}", HomeController::class, "show");
-        // $route->post("/users", HomeController::class, "store");
+        $route->get("/user/{user:firstName}/{number}", HomeController::class, "show");
     });
 
     $route->get("/", HomeController::class, "index");
